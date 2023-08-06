@@ -1,0 +1,8 @@
+#Author : Neeraj
+
+
+New-AzureRmResourceGroup -Name MyRSGroup -Location EastUS
+$sub1=New-AzureRmVirtualNetworkSubnetConfig -name 'subnet1' -AddressPrefix 192.168.1.0/24
+$vnet1=new-azurermvirtualnetwork -name 'myvnet' -ResourceGroupName MyRSGroup -AddressPrefix 192.168.0.0/16 -Subnet $sub1 -Location eastus
+$sub2=Add-AzureRmVirtualNetworkSubnetConfig -name 'subnet2' -AddressPrefix 192.168.2.0/24 -VirtualNetwork $vnet1
+set-azurermvirtualnetwork -VirtualNetwork $vnet1
