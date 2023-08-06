@@ -1,0 +1,42 @@
+
+May 03, 2018
+AZURE STORAGE THROUGH POWERSHELL SCRIPT
+#Author : Neeraj
+
+Get-AzureRMStorageAccount $storageAccountName| Select StorageAccountName, Location
+$resourceGroup = "MyRSGroup"
+$storageAccountName = "neerajvayu2018"
+#$storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName
+$location="east us"
+# Set the name of the storage account and the SKU name.
+$skuName = "Standard_LRS"  #standard local redundancy set
+$atier="cool"
+# Create the storage account.
+$storageAccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
+ -Name $storageAccountName `
+ -Location $location `
+ -SkuName $skuName `
+ $saccount=Get-AzureRMStorageAccount -ResourceGroupName "myrsgroup" -Name "neerajvayu2018"
+
+ #Set-AzureRmStorageAccount -ResourceGroupName $saccount.ResourceGroupName -AccountName $saccount.StorageAccountName -EnableHttpsTrafficOnly 1
+ #Set-AzureRmStorageAccount -ResourceGroupName $saccount.ResourceGroupName -AccountName $saccount.StorageAccountName -EnableEncryptionService "Blob,File"
+# Retrieve the context.
+$ctx = $storageAccount.Context
+### Obtain the Storage Account authentication keys using Azure Resource Manager (ARM)
+$Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $saccount.ResourceGroupName -Name $saccount.StorageAccountName
+### Use the Azure.Storage module to create a Storage Authentication Context
+$StorageContext = New-AzureStorageContext -StorageAccountName $saccount.StorageAccountName -StorageAccountKey $Keys[0].Value
+New-AzureStorageContainer -Context $StorageContext -Name neerajvhd;
+New-AzureStorageContainer -Context $StorageContext -Name tempdir -Permission Blob
+#https://neerajvayu2018.blob.core.windows.net/neerajvhd
+#https://neerajvayu2018.blob.core.windows.net/tempdir
+#Get-AzureStorageBlobContent -Container "tempdir" -Blob "ashok-rohtang.pdf" -Destination "C:\test\" -Context $StorageContext
+#Set-AzureStorageBlobContent -Container "tempdir" -File "C:\test\raja.txt" -Blob "rara1.txt" -Context $StorageContext
+$item=get-childitem C:\Users\Vayu\Desktop\azure
+foreach($file in $item)
+{
+$dfname=$file.name
+ $sfname ="C:\Users\Vayu\Desktop\azure\"+$file.name
+ #echo $sfname
+Set-AzureStorageBlobContent -Container "tempdir" -File $sfname -Blob $dfname -Context $StorageContext
+}
