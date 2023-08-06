@@ -1,0 +1,44 @@
+#Author : Neeraj
+
+clear
+$RsGrp_name=read-host "Enter resource group name:"
+write-host "select location like" -BackgroundColor yellow -ForegroundColor blue
+write-host "==============" -BackgroundColor yellow -ForegroundColor red
+write-host "East US" -BackgroundColor yellow -ForegroundColor black
+write-host "Central US" -BackgroundColor yellow -ForegroundColor black
+write-host "Central India" -BackgroundColor yellow -ForegroundColor black
+write-host "etc..." -BackgroundColor yellow -ForegroundColor black
+write-host "==============" -BackgroundColor yellow -ForegroundColor red
+write-host ""
+$RsGrp_location =read-host "Enter resource group location:"
+$rsn=Get-AzureRmResourceGroup |select ResourceGroupName
+$flag=0
+
+foreach($rsname in $rsn)
+{
+   if($RsGrp_name -eq $rsname.ResourceGroupName)
+       {
+        $flag=1
+        break
+        }
+       else
+       {
+       $flag=0
+       }
+}
+       if($flag -eq 1)
+       {
+           write-host "This Resource group already exist, please select another name" -BackgroundColor red -ForegroundColor yellow
+         
+       }
+       else
+       {
+       write-host "Creating ResourceGroup..." $RsGrp_name -BackgroundColor green -ForegroundColor white
+       echo "Please wait..."
+       New-AzureRmResourceGroup -name $RsGrp_name -location $RsGrp_location -Confirm:$false
+     
+       sleep 10
+     
+       echo "Generating output"
+       Get-AzureRmResourceGroup -Name $RsGrp_name
+       }
