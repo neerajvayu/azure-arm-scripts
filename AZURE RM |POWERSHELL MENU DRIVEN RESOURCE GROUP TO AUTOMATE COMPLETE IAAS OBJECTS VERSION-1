@@ -1,0 +1,265 @@
+#Author : Neeraj (neerajvayu123@gmail.com), please share your feedback that's the only thing i want in return of this script
+
+#As of now only creation of unique resource group is possible but in later version I will add menu driven VM, VNET, VPN creations, more things to come, keep on sharing this and please give your feedback and suggestions because that is more important for me to make such scripts
+#Author : Neeraj Kumar Jha
+#Version : 1.2
+#Added feature : You can see resource of resource group
+#Upcoming feature in pipeline : List resource by TYPE in the resource group
+##################################################################################
+function menu
+{
+clear
+write-host "Select your working unit:"
+echo "1.Resource Group" "2.Virtual Machine" "3.vNet" "4.Exit"
+$ch=read-host "Enter Action no:"
+   if($ch -eq 1)
+   {
+   RsGrp #calling function to manage resource group
+   }
+    if($ch -eq 2)
+   {
+   VMM #calling function to manage VM
+   }
+    if($ch -eq 3)
+   {
+   Vnet #calling function to manage virtual network
+   }
+    if($ch -eq 4)
+   {
+   write-host "Thanks for using NeerajVayu Azure code" -BackgroundColor yellow -ForegroundColor blue
+   break
+  
+   }
+}
+
+
+function RsGrp
+{
+clear
+write-host "Select your choice"
+echo "1.View Resource Group" "2.Create Resource Group" "3.View Resources in Group" "4.View Resource by Type" "5.Back to main menu"
+$ch=read-host "Enter your choice no"
+    if($ch -eq 1)
+   {
+   RsGrp_view
+   }
+    if($ch -eq 2)
+   {
+   RsGrp_create
+   }
+    if($ch -eq 3)
+   {
+   RsGrp_item
+   }
+   #function Compute_list($compute_name)
+    if($ch -eq 4)
+   {
+   Compute_list
+   }
+
+   if($ch -eq 5)
+   {
+   menu
+   }
+}
+
+
+function VMM
+{
+}
+
+
+function Vnet
+{
+}
+
+#region Resource Group [****]
+  ########## Compute_list Function to see resources by type ########
+
+function Compute_list
+{
+write-host "Select resource type to list" -BackgroundColor yellow -ForegroundColor blue
+echo ""
+write-host "===========================" -BackgroundColor yellow -ForegroundColor red
+write-host "1.Availability Sets" -BackgroundColor yellow -ForegroundColor black
+write-host "2.Disks" -BackgroundColor yellow -ForegroundColor black
+write-host "3.Virtual Machines" -BackgroundColor yellow -ForegroundColor black
+write-host "4.Network Interfaces" -BackgroundColor yellow -ForegroundColor black
+write-host "5.Network Security Groups" -BackgroundColor yellow -ForegroundColor black
+write-host "6.Public IP Addresses" -BackgroundColor yellow -ForegroundColor black
+write-host "7.Virtual Networks" -BackgroundColor yellow -ForegroundColor black
+write-host "8.Back to main menu" -BackgroundColor yellow -ForegroundColor black
+write-host "===========================" -BackgroundColor yellow -ForegroundColor red
+echo ""
+    $ch=read-host "Enter your choice"
+
+#Future enhancement
+#Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Compute/virtualMachines" | where-object -Property location -eq "centralus"
+#Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Compute/virtualMachines" | where-object -Property ResourceGroupName -eq "LinuxRsGrp"
+#end Future enhancement
+
+    switch($ch)
+    {
+
+       1 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Compute/availabilitySets" }
+       2 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Compute/disks" }
+       3 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Compute/virtualMachines" }
+       4 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Network/virtualNetworks" }
+       5 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Network/networkInterfaces" }
+       6 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Network/networkSecurityGroups" }
+       7 { Get-AzureRmResource |where-object -Property ResourceType -eq "Microsoft.Network/publicIPAddresses" }
+       8 { menu }
+       default {"Invalid entry"}
+
+    }
+    echo ""
+    echo ""
+    read-host "Press Enter key to continue"
+    echo ""
+    echo ""
+    echo "Back to previous menu..."
+    echo ". . . . . . . . . . . . . . . . . . . . . . . . . %100"
+
+    RsGrp
+}
+
+######### End function Compute_list ##########
+
+function RsGrp_view # function RsGrp_view Start
+{
+clear
+Get-AzureRmResourceGroup
+echo ""
+read-host "Press ENTER to continue"
+RsGrp
+} # function RsGrp_view end
+
+
+function RsGrp_create # function RsGrp_create Start
+{
+echo ""
+echo ""
+$RsGrp_name=read-host "Enter resource group name:"
+clear
+write-host "select location like" -BackgroundColor yellow -ForegroundColor blue
+write-host "==============" -BackgroundColor yellow -ForegroundColor red
+write-host "East US" -BackgroundColor yellow -ForegroundColor black
+write-host "Central US" -BackgroundColor yellow -ForegroundColor black
+write-host "Central India" -BackgroundColor yellow -ForegroundColor black
+write-host "etc..." -BackgroundColor yellow -ForegroundColor black
+write-host "==============" -BackgroundColor yellow -ForegroundColor red
+write-host ""
+$RsGrp_location =read-host "Enter resource group location:"
+$rsn=Get-AzureRmResourceGroup |select ResourceGroupName
+$flag=0
+#comparing the resource group :
+#$RsGrp_name="RS2"
+foreach($rsname in $rsn)
+{
+   if($RsGrp_name -eq $rsname.ResourceGroupName)
+       {
+        $flag=1
+        break
+        }
+       else
+       {
+       $flag=0
+       }
+}
+       if($flag -eq 1)
+       {
+           write-host "This Resource group already exist, please select another name" -BackgroundColor red -ForegroundColor yellow
+           echo ""
+           write-host -NoNewline "Going to main menu in 5 seconds..." -BackgroundColor green -ForegroundColor white
+           progress
+           menu
+       }
+       else
+       {
+       write-host "Creating ResourceGroup..." $RsGrp_name -BackgroundColor green -ForegroundColor white
+       New-AzureRmResourceGroup -name $RsGrp_name -location $RsGrp_location -Confirm:$false
+       write-host "Please view RG status to check" -BackgroundColor green -ForegroundColor white
+               }
+       echo ""
+       echo ""
+write-host -NoNewline "Loading resource group list"
+progress
+echo ""
+echo ""
+read-host "Press ENTER KEY to continue"
+RsGrp_view
+}
+
+##################### function RsGrp_create End
+
+
+
+function RsGrp_item #############function RsGrp_item start - this is to list down resource by specific resource grp name
+{
+Write-host " Fetching resource group details, please wait for few seconds...."
+echo ""
+$rsgrp=Get-AzureRmResourceGroup | select ResourceGroupName
+$rscount=$rsgrp.count
+write-host "Available Resource groups" -BackgroundColor yellow -ForegroundColor blue
+write-host "========================"
+    foreach($item  in $rsgrp)
+    {
+
+        write-host "       Resource Group Name  --  " $item.ResourceGroupName -BackgroundColor yellow -ForegroundColor black
+
+
+    }
+
+echo ""
+
+Write-host "No of Resource group : " $rscount -BackgroundColor yellow -ForegroundColor red
+
+
+$RsGrp_choice = read-host "Enter resource group Name to see details, Press '1' to return to main menu:"
+
+
+    if($RsGrp_choice -eq 1)
+    {
+
+        menu
+
+    }
+    else
+    {
+
+        get-AzureRmResourceGroup -name $RsGrp_choice
+
+        $rsch= read-host "Want to continue [y/n]"
+        if($rsch -eq "y")
+        { RSgrp_item }
+        elseif($rsch -eq "n")
+        { RsGrp }
+        else { main }
+
+    }
+
+ read-host "Press Enter key to go back to Resource Group menu"
+ RsGrp
+
+
+}
+#endregion Resource Group [****]
+
+function progress # function progress Start
+{
+   write-host -NoNewline ". "
+           sleep 1
+           write-host -NoNewline ". "
+           sleep 1
+           write-host -NoNewline ". "
+           sleep 1
+           write-host -NoNewline ". "
+           sleep 1
+           write-host -NoNewline ". Done"
+           sleep 1
+           write-host ""
+           echo ""
+} # function progress End
+
+
+##################################
