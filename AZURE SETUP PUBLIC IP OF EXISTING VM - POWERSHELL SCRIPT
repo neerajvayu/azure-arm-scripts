@@ -1,0 +1,7 @@
+#Author : Neeraj
+
+Get-AzurermVM -Name "mytestvm" -ResourceGroupName $saccount.ResourceGroupName | Set-AzureRmPublicIpAddress -PublicIpAddress $pip
+Set-AzureRmPublicIpAddress -PublicIpAddress $pip
+$pipnic=Get-AzureRmNetworkInterface -ResourceGroupName $saccount.ResourceGroupName -Name mytestvmnic
+$pipnic.IpConfigurations[0].PublicIpAddress=$pip
+Set-AzureRmNetworkInterface -NetworkInterface $pipnic
