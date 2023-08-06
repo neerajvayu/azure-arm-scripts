@@ -1,0 +1,15 @@
+#Author : Neeraj
+
+Login-AzureRmAccount
+function RSG
+{
+$rsg_lst=get-azureRMresourcegroup
+foreach($_ in $rsg_lst)
+   {
+   echo $rsg_lst.ResourceGroupName
+   }
+  }
+function VNET()
+{
+get-azureRMvirtualNetwork
+}
