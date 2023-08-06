@@ -1,0 +1,36 @@
+#Author : Neeraj Kumar Jha
+#SCRIPT_START
+clear
+$rsname = Get-AzureRmResourceGroup | select ResourceGroupName
+foreach($rsitem in $rsname)
+{
+    $rs_name=Get-AzureRmResourceGroup -Name $rsitem.ResourceGroupName | Get-AzureRmVirtualNetwork -WarningAction Ignore | select name -WarningAction Ignore
+    foreach($IN_RS_item in $rs_name)
+    {
+        $vnets = Get-AzureRmVirtualNetwork -Name $IN_RS_item.name -ResourceGroupName $rsitem.ResourceGroupName -WarningAction Ignore
+                   foreach($vnet in $vnets)
+                     {
+                       $add_count= $vnet.AddressSpace.AddressPrefixes.count
+                            if($add_count -gt 0)
+                            {
+                                $addr_list=$vnet.AddressSpace.AddressPrefixes
+                                $addrcnt=0
+                                echo "........................................................................................."
+                                write-host "Resource group name: " $rsitem.ResourceGroupName  " vNet Name: " $vnet.name
+                                    foreach($add_pref in $addr_list)
+                                    {
+                                        #echo $add_pref
+                                        write-host  " Address range: "$vnet.AddressSpace.AddressPrefixes.Item($addrcnt)
+                                        $addrcnt=$addrcnt+1
+                                     }
+                             }
+                            else
+                            {
+                                echo ""
+                                write-host "Resource group name: " $rsitem.ResourceGroupName  " vNet Name: " $vnet.name
+                                write-host  " Address range: "$vnet.AddressSpace.AddressPrefixes.Item($addrcnt)
+                             }
+                     }
+    }
+     
+}
