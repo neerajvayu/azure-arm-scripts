@@ -1,0 +1,46 @@
+#Author : Neeraj Jha
+
+
+#Get-AzureRMStorageAccount -name neerajtest -ResourceGroupName autorsgroup
+$all_storage=Get-AzureRMStorageAccount |select StorageAccountName,ResourceGroupName
+$tol_st_size=0
+foreach($item in $all_storage)
+{
+Write-host "For storage account $item.StorageAccountName and Resource group $item.ResourceGroupName"
+
+    $sac=Get-AzureRMStorageAccount -name $item.StorageAccountName -ResourceGroupName $item.ResourceGroupName
+    $Blob_container=Get-AzureStorageContainer -Context $sac.Context
+    $tot_cont_size=0
+    foreach($blob_cont in $Blob_container)
+    {
+
+
+
+            $Blob_name=Get-AzureStorageBlob -Container $blob_cont.name -Context $sac.Context
+       
+            $ln=0
+            write-host "Blob Container Name:" $Blob_cont.name
+                foreach($file in $Blob_name)
+                    {
+                        $lnt=$file.Length
+                        Write-Host "File name -" $file.name -NoNewline
+                        Write-Host " | File size in Byte -" $file.Length
+                        $ln=$ln+$lnt
+                    }
+
+    write-host "Total size in Byte :" $ln
+    write-host "Total size in KB :" ($ln/1024)
+    write-host "Total size in MB :" ($ln/1024/1024)
+    write-host "Total size of BLOB container $Blob_cont.name in GB :" ($ln/1024/1024/1024)
+    #write-host "Total size in TB :" ($ln/1024/1024/1024/1024)
+     $tot_cont_size =  $tot_cont_size+$ln
+
+    echo "------------------------------------------------------------------------"
+    }
+    Write-Host "Total size of the Storage account in GB" ($tot_cont_size/1024/1024/1024)
+
+    $tol_st_size = $tol_st_size +$tot_cont_size
+}
+
+
+write-host "Tota size of entire storage account BLOB in GB" ($tol_st_size/1024/1024/1024)
