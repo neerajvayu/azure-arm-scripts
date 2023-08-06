@@ -1,0 +1,91 @@
+#Author: Neeraj
+clear
+echo "1.List VMs "  "2.Stop VM" "3.Start vm" "4.Wildcard Search"
+$VMMch=read-host "Enter your choice:"
+    if($VMMch -eq 1)
+    {
+        $vmlst=Get-AzureRmResource -ResourceType microsoft.compute/virtualmachines | select name |Sort-Object -Property name
+        $ct=1
+            foreach($item in $vmlst)
+            {
+                write-host $ct "."$item.name
+                $ct++
+            }
+
+        $cp= Read-Host "Enter VM number"
+            $ct=1
+            $chh = $cp
+            foreach($item in $vmlst)
+            {
+                if($ct -eq $chh)
+                {
+                    $vname=$item.name
+                    Get-AzureRmResource -Name $vname
+               
+                }
+            $ct++
+            }
+
+    }
+
+    if($VMMch -eq 2)
+    {
+
+    $VMMn=Read-Host "Enter VM name"
+    $VMMRSGRP = Get-AzureRmResource -name $vMMn -ResourceType microsoft.compute/virtualmachines | select name, resourcegroupname
+    foreach($item in $VMMRSGRP)
+    {
+        echo $item.Name
+        echo $item.resourcegroupname
+        get-azurermvm -Name $item.Name -ResourceGroupName $item.resourcegroupname
+        $vmstop=Read-host "Press 'Y' to shutdown the vm"
+        if($vmstop -eq 'Y')
+        {
+        echo "Stopping the vm"
+        stop-azurermvm -Name $item.Name -ResourceGroupName $item.resourcegroupname
+         }
+
+    }
+
+
+
+    }
+
+    if($VMMch -eq 3)
+    {
+
+    $VMMn=Read-Host "Enter VM name"
+    $VMMRSGRP = Get-AzureRmResource -name $vMMn -ResourceType microsoft.compute/virtualmachines | select name, resourcegroupname
+    foreach($item in $VMMRSGRP)
+    {
+        echo $item.Name
+        echo $item.resourcegroupname
+        get-azurermvm -Name $item.Name -ResourceGroupName $item.resourcegroupname
+        $vmstop=Read-host "Press 'Y' to Start the vm"
+        if($vmstop -eq 'Y')
+        {
+        echo "Starting the vm"
+        start-azurermvm -Name $item.Name -ResourceGroupName $item.resourcegroupname
+         }
+
+    }
+
+
+
+    }
+
+    if($VMMch -eq 4)
+    {
+        $objname = Read-Host "Enter part of the vm name you want to search"
+        $wcard = "*"+$objname+"*"
+        $vmlst=Get-AzureRmResource -name $wcard -ResourceType microsoft.compute/virtualmachines
+        foreach($obj in $vmlst)
+        {
+        echo "" "............................................................................." ""
+        Write-Host "               Name :" $obj.name
+        Write-Host "Resource Group Name :" $obj.ResourceGroupName
+        Write-Host "      ResourceT ype :" $obj.ResourceType
+        Write-Host "           Location :" $obj.Location
+        Write-Host "        Resource Id :" $obj.ResourceId
+        }
+    }
