@@ -1,0 +1,12 @@
+#Modified by : Neeraj
+
+New-AzureRmResourceGroup -Name MyRSGroup -Location EastUS
+New-AzureRmVm -ResourceGroupName "vpn-1" `
+    -Name "myVM" `
+    -Location "East US" `
+    -VirtualNetworkName "vnet1" `
+    -SubnetName "subnet1" `
+    -SecurityGroupName "myvmSG" `
+    -PublicIpAddressName "myvmPIP" `
+    -OpenPorts 80,3389
+Since we didn't provide any image information so bydefault it will pick a small windows latest image
