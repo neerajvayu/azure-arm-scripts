@@ -1,0 +1,45 @@
+function listresourcegroup
+{
+Wtite-host " Fetching resource group details, please wait for few seconds...."
+echo ""
+$rsgrp=Get-AzureRmResourceGroup | select ResourceGroupName
+$rscount=$rsgrp.count
+write-host "Available Resource groups" -BackgroundColor yellow -ForegroundColor blue
+write-host "========================"
+    foreach($item  in $rsgrp)
+    {
+
+        write-host "       Resource Group Name  --  " $item.ResourceGroupName -BackgroundColor yellow -ForegroundColor black
+
+
+    }
+
+echo ""
+
+Write-host "No of Resource group : " $rscount -BackgroundColor yellow -ForegroundColor red
+
+
+$RsGrp_choice = read-host "Enter resource group Name to see details, Press '1' to return to main menu:"
+
+
+    if($RsGrp_choice -eq 1)
+    {
+
+        menu
+
+    }
+    else
+    {
+
+        get-AzureRmResourceGroup -name $RsGrp_choice
+
+        $rsch= read-host "Want to continue [y/n]"
+        if($rsch -eq "y")
+        { RSgrp_item }
+        elseif($rsch -eq "n")
+        { RsGrp }
+        else { main }
+
+    }
+
+}
