@@ -1,11 +1,9 @@
-
-May 03, 2018
-AZURE STORAGE THROUGH POWERSHELL SCRIPT
+#AZURE STORAGE THROUGH POWERSHELL SCRIPT
 #Author : Neeraj
 
 Get-AzureRMStorageAccount $storageAccountName| Select StorageAccountName, Location
 $resourceGroup = "MyRSGroup"
-$storageAccountName = "neerajvayu2018"
+$storageAccountName = "neerajvayunewstorageSTG1"
 #$storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName
 $location="east us"
 # Set the name of the storage account and the SKU name.
@@ -16,7 +14,7 @@ $storageAccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroup `
  -Name $storageAccountName `
  -Location $location `
  -SkuName $skuName `
- $saccount=Get-AzureRMStorageAccount -ResourceGroupName "myrsgroup" -Name "neerajvayu2018"
+ $saccount=Get-AzureRMStorageAccount -ResourceGroupName "myrsgroup" -Name "neerajvayunewstorageSTG1"
 
  #Set-AzureRmStorageAccount -ResourceGroupName $saccount.ResourceGroupName -AccountName $saccount.StorageAccountName -EnableHttpsTrafficOnly 1
  #Set-AzureRmStorageAccount -ResourceGroupName $saccount.ResourceGroupName -AccountName $saccount.StorageAccountName -EnableEncryptionService "Blob,File"
@@ -28,8 +26,8 @@ $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $saccount.ResourceGroupN
 $StorageContext = New-AzureStorageContext -StorageAccountName $saccount.StorageAccountName -StorageAccountKey $Keys[0].Value
 New-AzureStorageContainer -Context $StorageContext -Name neerajvhd;
 New-AzureStorageContainer -Context $StorageContext -Name tempdir -Permission Blob
-#https://neerajvayu2018.blob.core.windows.net/neerajvhd
-#https://neerajvayu2018.blob.core.windows.net/tempdir
+#https://neerajvayunewstorageSTG1.blob.core.windows.net/neerajvhd
+#https://neerajvayunewstorageSTG1.blob.core.windows.net/tempdir
 #Get-AzureStorageBlobContent -Container "tempdir" -Blob "ashok-rohtang.pdf" -Destination "C:\test\" -Context $StorageContext
 #Set-AzureStorageBlobContent -Container "tempdir" -File "C:\test\raja.txt" -Blob "rara1.txt" -Context $StorageContext
 $item=get-childitem C:\Users\Vayu\Desktop\azure
