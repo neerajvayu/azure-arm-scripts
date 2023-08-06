@@ -1,0 +1,78 @@
+#Author : Neeraj (neerajvayu123@gmail.com)- please give credit to the author if it helped you
+
+Please carefully go through the code and run part by part like i did
+1.PartA, 2.PartB, 3.PartC, 4.PartD
+If you will not run like this you may face some other issue, let me know if you face any issue at any step
+This script is tested and fully working , after a lot of failed attempt finally i made a working version
+Note: I have not included login steps in this script so pls take care of that
+#PART A
+#create a gateway subnet for myvnet
+$rsgrp=Get-AzureRmResourceGroup -name 'MyRSGroup'
+$GWIPName1 = "myvnetIP"
+#gateway public ip
+$gwpip1 = New-AzureRmPublicIpAddress -Name $GWIPName1 -ResourceGroupName $rsgrp.ResourceGroupName `
+-Location EastUS -AllocationMethod Dynamic
+$GWSubName1 = "GatewaySubnet"
+$GWSubPrefix1 = "https://www.linkedin.com/redir/invalid-link-page?url=192%2e168%2e3%2e0%2F24"
+#gateway configuration
+$vnet1 = Get-AzureRmVirtualNetwork -Name myvnet -ResourceGroupName $rsgrp.ResourceGroupName
+Add-AzureRmVirtualNetworkSubnetConfig -name $GWSubName1 -AddressPrefix $GWSubPrefix1 -VirtualNetwork $vnet1
+set-azurermvirtualnetwork -VirtualNetwork $vnet1
+#assigning newer value to the vnet1 is mandatory else it will take old subnets
+$vnet1 = Get-AzureRmVirtualNetwork -Name myvnet -ResourceGroupName $rsgrp.ResourceGroupName
+$subnet1 = Get-AzureRmVirtualNetworkSubnetConfig -Name "GatewaySubnet" -VirtualNetwork $vnet1
+$GWIPconfName1 = "gwipconf1-myvnet"
+$gwipconf1 = New-AzureRmVirtualNetworkGatewayIpConfig -Name $GWIPconfName1 `
+-Subnet $subnet1 -PublicIpAddress $gwpip1
+#create gateway
+$GWName1 = "myvnetGW"
+New-AzureRmVirtualNetworkGateway -Name $GWName1 -ResourceGroupName $rsgrp.ResourceGroupName `
+-Location EastUS -IpConfigurations $gwipconf1 -GatewayType Vpn `
+-VpnType RouteBased -GatewaySku VpnGw1
+#PART C
+$GWName1 = "myvnetGW"
+$rsgrp=Get-AzureRmResourceGroup -name 'MyRSGroup'
+$vnet1gw = Get-AzureRmVirtualNetworkGateway -Name $GWName1 -ResourceGroupName $rsgrp.ResourceGroupName
+$Connection14="myvnet-to-vpn3net"
+$rsgrp=Get-AzureRmResourceGroup -name 'MyRSGroup'
+New-AzureRmVirtualNetworkGatewayConnection -Name $Connection14 -ResourceGroupName $rsgrp.ResourceGroupName `
+-VirtualNetworkGateway1 $vnet1gw -VirtualNetworkGateway2 $vnet4gw -Location 'East Us' `
+-ConnectionType Vnet2Vnet -SharedKey 'AzureA1b2C3'
+#######################################################
+#PART B
+#create a gateway subnet for vpn3net
+$rsgrp=Get-AzureRmResourceGroup -name 'vpn-3'
+$GWIPName1 = "vpn3netIP"
+#gateway public ip
+$gwpip1 = New-AzureRmPublicIpAddress -Name $GWIPName1 -ResourceGroupName $rsgrp.ResourceGroupName `
+-Location 'Central US' -AllocationMethod Dynamic
+$GWSubName1 = "GatewaySubnet"
+$GWSubPrefix1 = "https://www.linkedin.com/redir/invalid-link-page?url=172%2e2%2e0%2F24"
+#gateway configuration
+$vnet1 = Get-AzureRmVirtualNetwork -Name vpn3net -ResourceGroupName $rsgrp.ResourceGroupName
+echo "adding subnet"
+Add-AzureRmVirtualNetworkSubnetConfig -name $GWSubName1 -AddressPrefix $GWSubPrefix1 -VirtualNetwork $vnet1
+echo "setting vnet"
+set-azurermvirtualnetwork -VirtualNetwork $vnet1
+#assigning newer value to the vnet1 is mandatory else it will take old subnets
+$vnet1 = Get-AzureRmVirtualNetwork -Name vpn3net -ResourceGroupName $rsgrp.ResourceGroupName
+$subnet1 = Get-AzureRmVirtualNetworkSubnetConfig -Name "GatewaySubnet" -VirtualNetwork $vnet1
+$GWIPconfName1 = "gwipconf1-vpn3net"
+echo "creating gateway ip config"
+$gwipconf1 = New-AzureRmVirtualNetworkGatewayIpConfig -Name $GWIPconfName1 `
+-Subnet $subnet1 -PublicIpAddress $gwpip1
+echo "creating gateway device"
+#create gateway
+$GWName1 = "vpn3netGW"
+New-AzureRmVirtualNetworkGateway -Name $GWName1 -ResourceGroupName $rsgrp.ResourceGroupName `
+-Location 'Central US' -IpConfigurations $gwipconf1 -GatewayType Vpn `
+-VpnType RouteBased -GatewaySku VpnGw1 -Verbose
+#PART D
+$GWName1 = "vpn3netGW"
+$rsgrp=Get-AzureRmResourceGroup -name 'vpn-3'
+$vnet4gw = Get-AzureRmVirtualNetworkGateway -Name $GWName1 -ResourceGroupName $rsgrp.ResourceGroupName
+$Connection41="vpn3net-to-myvnet"
+$rsgrp=Get-AzureRmResourceGroup -name 'vpn-3'
+New-AzureRmVirtualNetworkGatewayConnection -Name $Connection41 -ResourceGroupName $rsgrp.ResourceGroupName `
+-VirtualNetworkGateway1 $vnet4gw -VirtualNetworkGateway2 $vnet1gw -Location 'Central US' `
+-ConnectionType Vnet2Vnet -SharedKey 'AzureA1b2C3'
